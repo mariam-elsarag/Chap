@@ -23,11 +23,10 @@ A real-time chat application built using Node.js and MongoDB, featuring user aut
 
 ### Frontend
 
-| Technology     | Description                                |
-| -------------- | ------------------------------------------ |
-| **React.js**   | JavaScript library for building UIs        |
-| **PrimeReact** | UI components for React                    |
-| **Tailwind**   | Utility-first CSS framework for UI styling |
+| Technology   | Description                                |
+| ------------ | ------------------------------------------ |
+| **React.js** | JavaScript library for building UIs        |
+| **Tailwind** | Utility-first CSS framework for UI styling |
 
 ## Postman Documentation
 
