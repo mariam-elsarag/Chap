@@ -1,0 +1,11 @@
+# main features are
+1- Group chat (delete)
+2- pin chat
+3- chat (txt,file,audio)
+4- toggle mode
+5- login
+6- register
+
+## working on it
+__________________
+1- build basic ui

@@ -3,21 +3,54 @@
 @tailwind components;
 @tailwind utilities;
 :root {
-  --bg:#121212
-  --secondary-bg:#292929,
-  --border:#323232
+  --bg: #121212;
+  --secondary-bg: #292929;
+  --border: #323232;
   --primary: #6b8afd;
   --secondary: #2e333d;
   --text-1: #fff;
   --text-2: #fff;
+  --error: #b13b3b;
+  --shadow: #ffffff20;
 }
 
 .light {
-  --bg:#fff
-  --secondary-bg:#D9D9D9,
-  --border:#DFDFDF
-  --primary: #615EF0;
+  --bg: #fff;
+  --secondary-bg: #f8f8f8;
+  --border: #dfdfdf;
+  --primary: #615ef0;
   --secondary: #f1f1f1;
   --text-1: #515151;
   --text-2: #fff;
+  --error: #a50e0e;
+  --shadow: #00000017;
+}
+
+@layer utilities {
+  .center_y {
+    @apply flex items-center;
+  }
+  .center {
+    @apply flex items-center justify-center;
+  }
+  ::-webkit-scrollbar {
+    @apply w-1 h-1;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-secondary bg-clip-padding;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded;
+  }
+}
+@layer components {
+  .input_h {
+    @apply h-[48px]  rounded-6;
+  }
+  .label {
+    @apply text-text-1 text-sm;
+  }
+  .input {
+    @apply border input_h outline-none disabled:bg-transparent border-border py-2 px-4 bg-secondary;
+  }
 }/*# sourceMappingURL=style.css.map */
