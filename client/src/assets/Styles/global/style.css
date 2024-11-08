@@ -1,0 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  --bg:#121212
+  --secondary-bg:#292929,
+  --border:#323232
+  --primary: #6b8afd;
+  --secondary: #2e333d;
+  --text-1: #fff;
+  --text-2: #fff;
+}
+
+.light {
+  --bg:#fff
+  --secondary-bg:#D9D9D9,
+  --border:#DFDFDF
+  --primary: #615EF0;
+  --secondary: #f1f1f1;
+  --text-1: #515151;
+  --text-2: #fff;
+}/*# sourceMappingURL=style.css.map */
