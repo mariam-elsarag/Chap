@@ -36,7 +36,7 @@ export const register = createOne(
 );
 
 //reset password
-export const resetPassword = CatchAsync(async (req, res, next) => {
+export const forgetPassword = CatchAsync(async (req, res, next) => {
   const requiredArray = ["email"];
   const filterBody = FilterBody(req.body, next, requiredArray);
 
@@ -94,16 +94,15 @@ export const verifyOtp = CatchAsync(async (req, res, next) => {
 });
 // forget password
 
-export const forgetPassword = CatchAsync(async (req, res, next) => {
+export const resetPassword = CatchAsync(async (req, res, next) => {
   const requiredArray = ["password", "email"];
   const filterBody = FilterBody(req.body, next, requiredArray);
   const user = await User.findOne({ email: filterBody.email });
   if (!user) {
     return next(new AppErrors("User not found!", 404));
   }
-  const encryptPassword = await user.encryptPassword(filterBody.password, next);
 
-  user.password = encryptPassword;
+  user.password = filterBody.password;
   await user.save();
   res.status(200).json({ message: "Successfully change password" });
 });

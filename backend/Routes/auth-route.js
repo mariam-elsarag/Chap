@@ -15,8 +15,8 @@ import {
 
 router.route("/login").post(upload.none(), login);
 router.route("/register").post(upload.none(), register);
-router.route("/reset-password").post(upload.none(), resetPassword);
+router.route("/forget-password").post(upload.none(), forgetPassword);
 router.route("/verify").post(upload.none(), verifyOtp);
-router.route("/forget-password").patch(upload.none(), forgetPassword);
+router.route("/reset-password").patch(upload.none(), resetPassword);
 
 export default router;

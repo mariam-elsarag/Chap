@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../components/Button";
 import Form from "../../components/form/Form";
+import axiosInstance from "../../service/axiosInstance";
+import { useNavigate } from "react-router-dom";
 const ForgetPassword = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   // ___________________ use form ____________________
   const {
@@ -12,7 +15,7 @@ const ForgetPassword = () => {
     formState: { errors, dirtyFields, isDirty },
     handleSubmit,
   } = useForm({
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "" },
     mode: "onChange",
   });
   // ___________________ list ____________________
@@ -36,33 +39,20 @@ const ForgetPassword = () => {
   // ___________________ login ____________________
 
   const onsubmit = async (data) => {
-    // try {
-    //   setLoading(true);
-    //   const response = await axiosInstance.post("/login/", data);
-    //   if (response?.status === 200) {
-    //     login(response.data);
-    //     navigate("/home", { replace: true });
-    //     toast.success(t("successfullyLogin"));
-    //   }
-    // } catch (err) {
-    //   if (err?.response?.data?.non_field_errors) {
-    //     setError("email", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     setError("password", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     toast.error(t("invalidCredentials"));
-    //   }
-    //   if (err?.response?.data === "not verfied") {
-    //     toast.error(t("notVerified"));
-    //   }
-    //   console.log("error", err);
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      setLoading(true);
+      const response = await axiosInstance.post(
+        "/api/auth/forget-password",
+        data
+      );
+      if (response?.status === 200) {
+        navigate(`/otp/?email=${data?.email}`);
+      }
+    } catch (err) {
+      console.log("error", err);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <form onSubmit={handleSubmit(onsubmit)} className="grid gap-10">

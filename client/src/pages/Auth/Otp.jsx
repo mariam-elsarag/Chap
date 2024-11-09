@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Form from "../../components/form/Form";
 import { useForm } from "react-hook-form";
 import Button from "../../components/Button";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import axiosInstance from "../../service/axiosInstance";
+import { toast } from "react-toastify";
 
 const Otp = () => {
+  const navigate = useNavigate();
+  const [searchparam] = useSearchParams();
+  const email = searchparam.get("email");
   const [loading, setLoading] = useState(false);
   // ___________________ use form ____________________
   const {
@@ -33,34 +39,27 @@ const Otp = () => {
   // ___________________ login ____________________
 
   const onsubmit = async (data) => {
-    // try {
-    //   setLoading(true);
-    //   const response = await axiosInstance.post("/login/", data);
-    //   if (response?.status === 200) {
-    //     login(response.data);
-    //     navigate("/home", { replace: true });
-    //     toast.success(t("successfullyLogin"));
-    //   }
-    // } catch (err) {
-    //   if (err?.response?.data?.non_field_errors) {
-    //     setError("email", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     setError("password", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     toast.error(t("invalidCredentials"));
-    //   }
-    //   if (err?.response?.data === "not verfied") {
-    //     toast.error(t("notVerified"));
-    //   }
-    //   console.log("error", err);
-    // } finally {
-    //   setLoading(false);
-    // }
+    const sendData = { email: email, otp: data.otp };
+    try {
+      setLoading(true);
+      const response = await axiosInstance.post("/api/auth/verify", sendData);
+      if (response?.status === 200) {
+        navigate(`/reset-password?email=${email}`, { replace: true });
+      }
+    } catch (err) {
+      if (err?.response?.data?.errors) {
+        toast.error("Invalid OTP");
+      }
+      console.log("error", err);
+    } finally {
+      setLoading(false);
+    }
   };
+  useEffect(() => {
+    if (!email) {
+      navigate("/login");
+    }
+  }, []);
   return (
     <form onSubmit={handleSubmit(onsubmit)} className="grid gap-10">
       <div className="center_y flex-col  gap-2 !items-start">

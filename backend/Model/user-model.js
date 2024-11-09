@@ -45,18 +45,7 @@ userSchema.set("toJSON", {
     return ret;
   },
 });
-// encrypt password
-userSchema.methods.encryptPassword = async function (password, next) {
-  if (!validator.isStrongPassword(password)) {
-    return next(
-      new AppErrors(
-        "Password is too weak, please use a stronger password.",
-        400
-      )
-    );
-  }
-  return (password = await bcrypt.hash(password, 12));
-};
+
 // encrypt password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -67,6 +56,8 @@ userSchema.methods.comparePassword = async function (
   candidatePassword,
   userPassword
 ) {
+  console.log(candidatePassword, "can");
+  console.log(userPassword, "cuser");
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 // check password for jwt

@@ -5,9 +5,10 @@ import axiosInstance from "../../service/axiosInstance";
 import { toast } from "react-toastify";
 import Form from "../../components/form/Form";
 import Button from "../../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   // ___________________ use form ____________________
@@ -52,33 +53,32 @@ const Login = () => {
   // ___________________ login ____________________
 
   const onsubmit = async (data) => {
-    // try {
-    //   setLoading(true);
-    //   const response = await axiosInstance.post("/login/", data);
-    //   if (response?.status === 200) {
-    //     login(response.data);
-    //     navigate("/home", { replace: true });
-    //     toast.success(t("successfullyLogin"));
-    //   }
-    // } catch (err) {
-    //   if (err?.response?.data?.non_field_errors) {
-    //     setError("email", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     setError("password", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     toast.error(t("invalidCredentials"));
-    //   }
-    //   if (err?.response?.data === "not verfied") {
-    //     toast.error(t("notVerified"));
-    //   }
-    //   console.log("error", err);
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      setLoading(true);
+      const response = await axiosInstance.post("/api/auth/login", data);
+      if (response?.status === 200) {
+        login(response.data);
+
+        navigate("/home", { replace: true });
+        toast.success("Successfully loged in");
+      }
+    } catch (err) {
+      if (err?.response?.data?.errors) {
+        setError("email", {
+          type: "manual",
+          message: "Wrong credentials",
+        });
+        setError("password", {
+          type: "manual",
+          message: "Wrong credentials",
+        });
+        toast.error("Wrong credentials");
+      }
+
+      console.log("error", err);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <form onSubmit={handleSubmit(onsubmit)} className="grid gap-10">

@@ -1,18 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import Form from "../../components/form/Form";
 import { useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import axiosInstance from "../../service/axiosInstance";
+import { toast } from "react-toastify";
 const ResetPassword = () => {
+  const navigate = useNavigate();
+  const [searchparam] = useSearchParams();
+  const email = searchparam.get("email");
   const [loading, setLoading] = useState(false);
   // ___________________ use form ____________________
   const {
     control,
     setError,
     reset,
+    getValues,
     formState: { errors, dirtyFields, isDirty },
     handleSubmit,
   } = useForm({
-    defaultValues: { email: "", password: "" },
+    defaultValues: { password: "" },
     mode: "onChange",
   });
   // ___________________ list ____________________
@@ -20,7 +27,7 @@ const ResetPassword = () => {
     {
       id: 0,
       formType: "password",
-      fieldName: "new_password",
+      fieldName: "password",
       validator: {
         required: "Password is required",
       },
@@ -35,7 +42,7 @@ const ResetPassword = () => {
       validator: {
         required: "Confirm password is required",
         validate: (value) => {
-          const password = getValues("new_password");
+          const password = getValues("password");
           return value === password || "Passwords do not match";
         },
       },
@@ -46,34 +53,33 @@ const ResetPassword = () => {
   ];
   // ___________________ submit ____________________
   const onsubmit = async (data) => {
-    // try {
-    //   setLoading(true);
-    //   const response = await axiosInstance.post("/login/", data);
-    //   if (response?.status === 200) {
-    //     login(response.data);
-    //     navigate("/home", { replace: true });
-    //     toast.success(t("successfullyLogin"));
-    //   }
-    // } catch (err) {
-    //   if (err?.response?.data?.non_field_errors) {
-    //     setError("email", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     setError("password", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     toast.error(t("invalidCredentials"));
-    //   }
-    //   if (err?.response?.data === "not verfied") {
-    //     toast.error(t("notVerified"));
-    //   }
-    //   console.log("error", err);
-    // } finally {
-    //   setLoading(false);
-    // }
+    const sendData = { email: email, password: data.password };
+    try {
+      setLoading(true);
+      const response = await axiosInstance.patch(
+        "/api/auth/reset-password",
+        sendData
+      );
+      if (response?.status === 200) {
+        navigate(`/login`, { replace: true });
+      }
+    } catch (err) {
+      if (
+        err?.response?.data?.errors ||
+        err?.response?.data?.errors?.lenght > 0
+      ) {
+        toast.error(err?.response?.data?.errors);
+      }
+      console.log("error", err);
+    } finally {
+      setLoading(false);
+    }
   };
+  useEffect(() => {
+    if (!email) {
+      navigate("/login");
+    }
+  }, []);
   return (
     <form onSubmit={handleSubmit(onsubmit)} className="grid gap-10">
       <h1 className="text-xl text-text-1 ">New password</h1>
