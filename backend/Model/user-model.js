@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt";
+import AppErrors from "../Utils/AppErrors.js";
 
 const userSchema = new mongoose.Schema({
   full_name: {
@@ -23,6 +24,11 @@ const userSchema = new mongoose.Schema({
       ,
     ],
   },
+  role: {
+    type: String,
+    enum: ["admin", "user"],
+    default: "user",
+  },
   passwordChangedAt: Date,
   otp: String,
   otpExpire: Date,
@@ -39,6 +45,18 @@ userSchema.set("toJSON", {
     return ret;
   },
 });
+// encrypt password
+userSchema.methods.encryptPassword = async function (password, next) {
+  if (!validator.isStrongPassword(password)) {
+    return next(
+      new AppErrors(
+        "Password is too weak, please use a stronger password.",
+        400
+      )
+    );
+  }
+  return (password = await bcrypt.hash(password, 12));
+};
 // encrypt password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -61,6 +79,14 @@ userSchema.methods.checkPasswordHasChanged = async function (jwtTimeStemp) {
     return jwtTimeStemp < passwordChangeInMillis;
   }
   return false;
+};
+
+// create otp
+userSchema.methods.createOtp = function (expire = 10) {
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  this.otp = otpCode;
+  this.otpExpire = Date.now() + expire * 60 * 1000;
+  return otpCode;
 };
 const User = mongoose.model("User", userSchema, "User");
 export default User;

@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 // for security
 import helmet from "helmet";
@@ -11,8 +12,12 @@ import AppErrors from "./Utils/AppErrors.js";
 // middleware
 import GlobalErrors from "./Middlewares/error-handeler.js";
 
-const app = express();
+// routes
+import authRoutes from "./Routes/auth-route.js";
 
+const app = express();
+// for cors
+app.use(cors());
 // body barser
 app.use(express.json());
 
@@ -22,8 +27,11 @@ app.use(xss());
 app.use(hpp());
 app.use(mongoSanitize());
 
+// routes
+app.use("/api/auth", authRoutes);
+
 app.all("*", (req, res, next) => {
-  next(AppErrors(`Can't find ${req.originalUrl} on this server`, 404));
+  next(new AppErrors(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
 // for global errors

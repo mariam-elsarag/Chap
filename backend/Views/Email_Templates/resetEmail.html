@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1 !important;
+      color: #333;
+    }
+
+    .container {
+      padding: 20px;
+
+    }
+
+    .header {
+
+      color: #615ef0;
+      font-size: 13px;
+    }
+
+    .content {
+      color: #515151;
+    }
+
+    .content p {
+      padding: 0;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Password Reset Request</h1>
+    </header>
+    <div class="content">
+      <p>Hi {{name}},</p>
+      <p>Please confirm your email address by entering the following code: {{otpCode}}</p>
+      <p>
+        if the otp page didn't automatically open use this:
+        <a href="{{resetLink}}">link</a>
+      </p>
+      <p>If you did not request a password reset, please ignore this email.</p>
+      <p>Thanks,</p>
+      <p>
+        Chat Team
+      </p>
+    </div>
+
+  </div>
+</body>
+
+</html>

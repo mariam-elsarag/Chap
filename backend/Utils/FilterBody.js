@@ -16,8 +16,10 @@ const FilterBody = (body, next, requiredFields, allowedFields = []) => {
   });
 
   if (errors.length > 0) {
-    return next(new AppErrors(errors, 400));
+    next(new AppErrors(errors, 400)); // Add return here
+    return null;
   }
+
   return filter;
 };
 export default FilterBody;
