@@ -12,6 +12,8 @@ const ForgetPassword = lazy(() => import("./pages/Auth/ForgetPassword"));
 const ResetPassword = lazy(() => import("./pages/Auth/ResetPassword"));
 
 const AppLayout = lazy(() => import("./pages/AppLayout"));
+// chat
+const Chat_Container = lazy(() => import("./pages/chat/ChatContainer"));
 
 const App = () => {
   const { token } = useAuth();
@@ -20,7 +22,10 @@ const App = () => {
     <Suspense>
       <Routes location={location} key={location.pathname}>
         {token ? (
-          <Route path="/" element={<AppLayout />} />
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<Navigate to="chat" />} />
+            <Route path="chat" element={<Chat_Container />} />
+          </Route>
         ) : (
           <Route path="/" element={<UnAuthLayout />}>
             <Route index element={<Navigate to="login" />} />

@@ -1,7 +1,2 @@
-import React from "react";
-
-const Image = () => {
-  return <div>image</div>;
-};
-
-export default Image;
+export { default as AvatarUserBoy } from "./avatars/user_boy.svg";
+export { default as AvatarUserGirl } from "./avatars/user_girl.svg";

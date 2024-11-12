@@ -59,7 +59,7 @@ const Login = () => {
       if (response?.status === 200) {
         login(response.data);
 
-        navigate("/home", { replace: true });
+        navigate("/", { replace: true });
         toast.success("Successfully loged in");
       }
     } catch (err) {
