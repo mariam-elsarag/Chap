@@ -16,6 +16,7 @@ export default {
         "text-2": "var(--text-2)",
         border: "var(--border)",
         error: "var(--error)",
+        green: "var(--green)",
       },
       boxShadow: {
         main: "0 0 10px var(--shadow)",

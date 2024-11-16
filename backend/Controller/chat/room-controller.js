@@ -16,15 +16,11 @@ export const createRoom = CatchAsync(async (req, res, next) => {
   const filterData = FilterBody(req.body, next, requiredArray);
 
   const existingRoom = await Room.findOne({
-    $or: [
-      { user_1: userId, user_2: filterData.user_id },
-      { user_1: filterData.user_id, user_2: userId },
-    ],
+    participants: { $all: [userId, filterData.user_id] },
   });
   if (!existingRoom) {
     const room = await Room.create({
-      user_1: userId,
-      user_2: filterData.user_id,
+      participants: [userId, filterData.user_id],
     });
 
     res.status(201).json(room);
@@ -41,25 +37,44 @@ export const getRooms = CatchAsync(async (req, res, next) => {
   const keyword = req.query.keyword ? new RegExp(req.query.keyword, "i") : null;
 
   let queryString = Room.find({
-    $or: [{ user_1: userId }, { user_2: userId }],
+    participants: { $in: [userId] },
   })
     .populate([
-      { path: "user_1", select: "full_name avatar" },
-      { path: "user_2", select: "full_name avatar" },
+      { path: "participants", select: "full_name avatar" },
+      { path: "messages" },
     ])
     .sort({ isPen: -1, updatedAt: -1 })
     .select("-createdAt");
 
   let rooms = await queryString;
   if (keyword) {
-    rooms = rooms.filter(
-      (room) =>
-        keyword.test(room.user_1.full_name) ||
-        keyword.test(room.user_2.full_name)
+    rooms = rooms.filter((room) =>
+      room.participants.some((participant) =>
+        keyword.test(participant.full_name)
+      )
     );
   }
+  const sendRoom = rooms.map((room) => {
+    const roomData = room.toJSON();
+    roomData.participants = roomData.participants.filter(
+      (participant) => participant.userId.toJSON() !== userId.toJSON()
+    );
 
-  res.status(200).json({ rooms });
+    return {
+      user: roomData.participants.at(0),
+      isPen: roomData.isPen,
+      isReeded: roomData.isReeded,
+      message: roomData.messages
+        .slice(0, 2)
+        .map(({ sender, room, receiver, messageId, ...rest }) => ({
+          ...rest,
+        }))
+        .at(0),
+      updatedAt: roomData.updatedAt,
+      roomId: roomData.roomId,
+    };
+  });
+  res.status(200).json({ rooms: sendRoom });
 });
 
 // delete room

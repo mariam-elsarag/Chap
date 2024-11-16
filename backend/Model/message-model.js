@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema({
-  room: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Room",
-    required: [true, "Room is required"],
-  },
+  room: { type: mongoose.Schema.ObjectId, ref: "Room" },
   sender: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
+  receiver: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
   },
@@ -14,7 +14,24 @@ const messageSchema = new mongoose.Schema({
     type: String,
   },
 });
-
+messageSchema.pre("save", function (next) {
+  this.populate({
+    path: "sender",
+    select: "full_name avatar",
+  });
+  next();
+});
+messageSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "sender",
+    select: "full_name avatar",
+  });
+  this.populate({
+    path: "receiver",
+    select: "full_name avatar ",
+  });
+  next();
+});
 messageSchema.set("toJSON", {
   transform: (doc, ret) => {
     ret.messageId = ret._id;

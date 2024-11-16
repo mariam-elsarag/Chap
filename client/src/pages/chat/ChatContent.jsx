@@ -3,6 +3,8 @@ import { AvatarUserBoy } from "../../assets/images/Image";
 import { RiSendPlaneFill } from "react-icons/ri";
 import { GrAttachment } from "react-icons/gr";
 import { MessageLayout } from "./MessageType";
+import { useChat } from "../../context/Chat/ChatContext";
+import { useAuth } from "../../context/Auth/AuthContext";
 const ChatContent = () => {
   return (
     <div className="flex-1 bg--bg grid grid-rows-[auto_1fr_auto]  h-full pb-5 ">
@@ -13,16 +15,32 @@ const ChatContent = () => {
   );
 };
 const ChatHeader = () => {
+  const { selectRoom } = useChat();
+  const { onlineUsers } = useAuth();
+  const isOnline = onlineUsers.includes(selectRoom?.user?.userId);
   return (
     <header className="flex items-center justify-between bg-bg  border-b border-border py-3 px-8 ">
       <figure className="flex gap-2 items-center">
         <img
-          src={AvatarUserBoy}
+          src={
+            selectRoom?.user?.avatar !== ""
+              ? selectRoom?.user?.avatar
+              : AvatarUserBoy
+          }
           alt="avatar"
           className="w-[48px] h-[48px] rounded-full object-cover"
         />
+
         <div className="flex  flex-col gap-1">
-          <h2 className="text-text-1 font-medium text-sm">Grace Miller</h2>
+          <h2 className="text-text-1 font-medium text-sm">
+            {selectRoom?.user?.full_name}
+          </h2>
+          {isOnline && (
+            <p className="center_y gap-1">
+              <span className="flex w-[8px] h-[8px] rounded-full bg-green "></span>
+              <span className="text-text-1 text-sm">online</span>
+            </p>
+          )}
         </div>
       </figure>
     </header>

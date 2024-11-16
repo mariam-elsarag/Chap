@@ -1,16 +1,15 @@
-import axios from "axios";
-import Cookies from "js-cookie";
-
+import { useAuth } from "../context/Auth/AuthContext";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import axiosInstance from "../service/axiosInstance";
 
 const apiKey = import.meta.env.VITE_REACT_APP_BASE_URL;
 
 function useGetData(endpoint) {
   const [data, setData] = useState(null);
+  const [query, setQuery] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
-  const { token } = useSelector((store) => store.auth);
+  const { token } = useAuth();
 
   const fetchData = async () => {
     const controller = new AbortController();
@@ -18,10 +17,11 @@ function useGetData(endpoint) {
 
     try {
       setLoading(true);
-      const response = await axios.get(`${apiKey + endpoint}`, {
+      const response = await axiosInstance.get(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: { query },
         signal,
       });
       const fetchedData = await response.data;
@@ -36,9 +36,9 @@ function useGetData(endpoint) {
   };
   useEffect(() => {
     fetchData();
-  }, [endpoint, token]);
+  }, [endpoint, query]);
 
-  return { data, setData, loading, fetchData, error };
+  return { data, setData, loading, fetchData, error, setQuery };
 }
 
 export default useGetData;

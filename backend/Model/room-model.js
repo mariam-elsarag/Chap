@@ -2,16 +2,13 @@ import mongoose from "mongoose";
 
 const roomSchema = new mongoose.Schema(
   {
-    user_1: {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-      required: [true, "User is required"],
-    },
-    user_2: {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-      required: [true, "User is required"],
-    },
+    participants: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      },
+    ],
+
     isPin: {
       type: Boolean,
       default: false,
@@ -20,6 +17,7 @@ const roomSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    messages: [{ type: mongoose.Schema.ObjectId, ref: "Message", default: [] }],
   },
   { timestamps: true }
 );
@@ -33,17 +31,12 @@ roomSchema.set("toJSON", {
     return ret;
   },
 });
-roomSchema.index({ user_1: 1, user_2: 1 }, { unique: true });
-
 roomSchema.pre("save", function (next) {
   this.populate({
-    path: "user_1",
+    path: "participants",
     select: "full_name avatar",
   });
-  this.populate({
-    path: "user_2",
-    select: "full_name avatar",
-  });
+
   next();
 });
 

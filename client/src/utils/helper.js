@@ -8,20 +8,15 @@ export function truncateText(text, length, more) {
   return `${text.substring(0, length)} ...`;
 }
 // formate hour
-export const formatDate = (dateTimeString) => {
-  const date = new Date(dateTimeString);
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+export const formatTime = (dateString) => {
+  const date = new Date(dateString);
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
 
-  let formattedHours = hours % 12 || 12;
-  const amPm =
-    hours >= 12
-      ? `${currentLanguageCode === "en" ? "PM" : "م"}`
-      : `${currentLanguageCode === "en" ? "AM" : "ص"}`;
+  hours = hours % 12 || 12;
 
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-
-  return `${formattedHours}:${formattedMinutes} ${amPm}`;
+  return `${hours}:${minutes} ${ampm}`;
 };
 export const autoExpandTextarea = (textarea, max_height = "100") => {
   const maxHeight = (parseInt(max_height, 10) * window.innerHeight) / 100;

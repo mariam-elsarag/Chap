@@ -31,7 +31,7 @@ export const login = CatchAsync(async (req, res, next) => {
 // create new user
 export const register = createOne(
   User,
-  ["full_name", "email", "password"],
+  ["full_name", "email", "password", "gender"],
   "user"
 );
 

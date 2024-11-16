@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useEffect, useState } from "react";
 
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./context/Auth/AuthContext";
+import { ChatProvider } from "./context/Chat/ChatContext";
 // Routes
 // auth
 const UnAuthLayout = lazy(() => import("./pages/Auth/UnAuthLayout"));
@@ -24,7 +25,14 @@ const App = () => {
         {token ? (
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Navigate to="chat" />} />
-            <Route path="chat" element={<Chat_Container />} />
+            <Route
+              path="chat"
+              element={
+                <ChatProvider>
+                  <Chat_Container />
+                </ChatProvider>
+              }
+            />
           </Route>
         ) : (
           <Route path="/" element={<UnAuthLayout />}>
