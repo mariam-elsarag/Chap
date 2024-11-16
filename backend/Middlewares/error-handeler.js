@@ -39,7 +39,11 @@ const handleDublicateDbData = (err) => {
 };
 const handleCastError = (err) => {
   let errors = [];
-  errors.push({ validation: err.message });
+  if (err.kind === "ObjectId") {
+    errors.push({ validation: "Invalid Id" });
+  } else {
+    errors.push({ validation: err.message });
+  }
   return new AppErrors(errors, 400);
 };
 

@@ -29,6 +29,9 @@ const userSchema = new mongoose.Schema({
     enum: ["admin", "user"],
     default: "user",
   },
+  avatar: {
+    type: String,
+  },
   passwordChangedAt: Date,
   otp: String,
   otpExpire: Date,
@@ -61,13 +64,12 @@ userSchema.methods.comparePassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 // check password for jwt
-userSchema.methods.checkPasswordHasChanged = async function (jwtTimeStemp) {
+userSchema.methods.checkPasswordHasChanged = async function (jwtTimeStamp) {
   if (this.passwordChangedAt) {
-    const passwordChangeInMillis = parseInt(
-      this.passwordChangedAt.getTime() / 1000,
-      10
+    const passwordChangedAtSec = Math.floor(
+      this.passwordChangedAt.getTime() / 1000
     );
-    return jwtTimeStemp < passwordChangeInMillis;
+    return jwtTimeStamp < passwordChangedAtSec;
   }
   return false;
 };

@@ -103,6 +103,7 @@ export const resetPassword = CatchAsync(async (req, res, next) => {
   }
 
   user.password = filterBody.password;
+  user.passwordChangedAt = Date.now();
   await user.save();
   res.status(200).json({ message: "Successfully change password" });
 });
