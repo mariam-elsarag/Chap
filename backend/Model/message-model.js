@@ -1,19 +1,23 @@
+import { Timestamp } from "mongodb";
 import mongoose from "mongoose";
 
-const messageSchema = new mongoose.Schema({
-  room: { type: mongoose.Schema.ObjectId, ref: "Room" },
-  sender: {
-    type: mongoose.Schema.ObjectId,
-    ref: "User",
+const messageSchema = new mongoose.Schema(
+  {
+    room: { type: mongoose.Schema.ObjectId, ref: "Room" },
+    sender: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
+    receiver: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
+    text: {
+      type: String,
+    },
   },
-  receiver: {
-    type: mongoose.Schema.ObjectId,
-    ref: "User",
-  },
-  text: {
-    type: String,
-  },
-});
+  { timestamps: true }
+);
 messageSchema.pre("save", function (next) {
   this.populate({
     path: "sender",

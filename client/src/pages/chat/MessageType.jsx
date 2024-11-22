@@ -28,15 +28,14 @@ export const MessageLayout = ({ type = "text", data, isSender = false }) => {
   );
 };
 
-const MessageText = ({ isSender }) => {
+const MessageText = ({ isSender, text }) => {
   return (
     <p
       className={` rounded-xl py-2 text-sm px-3 ${
         isSender ? "bg-secondary text-text-1 " : "bg-primary text-text-2 "
       }`}
     >
-      {" "}
-      woo
+      {text}
     </p>
   );
 };

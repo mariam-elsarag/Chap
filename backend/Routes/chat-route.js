@@ -11,6 +11,7 @@ import {
   createRoom,
   getRooms,
   deleteRoom,
+  unreadMessage,
 } from "../Controller/chat/room-controller.js";
 import {
   sendMessage,
@@ -22,6 +23,7 @@ router.use(protect());
 // rooms
 router.route("/room").post(upload.none(), createRoom).get(getRooms);
 router.route("/room/:id").delete(deleteRoom);
+router.route("/room/:id/read_message").patch(unreadMessage);
 
 // for chat
 router.route("/message").post(upload.none(), sendMessage);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Message from "./message-model.js";
 
 const roomSchema = new mongoose.Schema(
   {
@@ -17,7 +18,11 @@ const roomSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    messages: [{ type: mongoose.Schema.ObjectId, ref: "Message", default: [] }],
+    unread_count: {
+      type: Number,
+      default: 0,
+    },
+    message: { type: mongoose.Schema.ObjectId, ref: "Message" },
   },
   { timestamps: true }
 );
@@ -38,6 +43,9 @@ roomSchema.pre("save", function (next) {
   });
 
   next();
+});
+roomSchema.post("findOneAndDelete", async function (doc) {
+  await Message.deleteMany({ room: doc?._id });
 });
 
 const Room = mongoose.model("Room", roomSchema, "Room");

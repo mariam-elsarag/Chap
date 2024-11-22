@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TfiSearch } from "react-icons/tfi";
 import { FaPlus } from "react-icons/fa6";
 import { AvatarUserBoy } from "../../assets/images/Image";
@@ -8,9 +8,32 @@ import { useChat } from "../../context/Chat/ChatContext";
 import { useAuth } from "../../context/Auth/AuthContext";
 
 const ChatRooms = () => {
+  const { socket } = useAuth();
   const [search, setSearch] = useState("");
-  const { data, setQuery } = useGetData(`/api/chat/room`);
-  console.log(data, "kk");
+  const { data, setQuery, setData } = useGetData(`/api/chat/room`);
+
+  useEffect(() => {
+    if (socket) {
+      const handleRoomUpdate = (updateRoom) => {
+        setData((prevData) => {
+          const updatedRooms = prevData.rooms.map((item) =>
+            item.roomId === updateRoom.roomId
+              ? { ...item, message: { text: updateRoom.message } }
+              : item
+          );
+
+          return { ...prevData, rooms: updatedRooms };
+        });
+      };
+
+      socket.on("roomUpdate", handleRoomUpdate);
+
+      return () => {
+        socket.off("roomUpdate", handleRoomUpdate);
+      };
+    }
+  }, [socket]);
+  console.log(data, "romw");
   return (
     <aside className="w-[320px] pt-5 pb-3 px-4  border-r border-border overflow-hidden h-full flex flex-col  gap-4 ">
       <header className="flex items-center  gap-2">
@@ -44,18 +67,20 @@ const ChatMember = ({ data }) => {
   const { openRoom } = useChat();
 
   const renderLastMessage = (data) => {
-    if (data.text) {
+    if (data?.text) {
       return (
         <p className="text-sm text-text-1 ">{truncateText(data.text, 20)}</p>
       );
     }
   };
+
+  console.log(data, "data?.isReaded ");
   return (
     <figure
       role="button"
       onClick={() => openRoom(data?.roomId, data.user)}
       className={`flex items-center justify-between ${
-        data?.isReaded ? "" : "bg-light-primary"
+        data?.isReeded ? "bg-red" : "bg-light-primary"
       } py-3 px-2 rounded-6  gap-2`}
     >
       <div className="relative w-[58px] h-[58px] rounded-full">
@@ -76,10 +101,11 @@ const ChatMember = ({ data }) => {
         <span className="text-text-1 text-xs">
           {data?.updatedAt ? formatTime(data?.updatedAt) : "-"}
         </span>
-        <span className="bg-primary rounded-full w-[18px] h-[18px] center text-xs text-text-2 ">
-          {" "}
-          1
-        </span>
+        {data?.unread_count > 0 && (
+          <span className="bg-primary rounded-full w-[18px] h-[18px] center text-xs text-text-2 ">
+            {data?.unread_count}
+          </span>
+        )}
       </div>
     </figure>
   );

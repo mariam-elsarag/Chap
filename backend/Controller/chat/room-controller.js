@@ -30,6 +30,15 @@ export const createRoom = CatchAsync(async (req, res, next) => {
       .json({ roomId: existingRoom._id, message: "Already have a room" });
   }
 });
+// unread message
+export const unreadMessage = CatchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const room = await Room.findByIdAndUpdate(
+    { _id: id },
+    { isReeded: true, unread_count: 0 }
+  );
+  res.status(200).json({ isReeded: true });
+});
 
 // get all rooms
 export const getRooms = CatchAsync(async (req, res, next) => {
@@ -41,7 +50,7 @@ export const getRooms = CatchAsync(async (req, res, next) => {
   })
     .populate([
       { path: "participants", select: "full_name avatar" },
-      { path: "messages" },
+      { path: "message", select: "text" },
     ])
     .sort({ isPen: -1, updatedAt: -1 })
     .select("-createdAt");
@@ -49,9 +58,11 @@ export const getRooms = CatchAsync(async (req, res, next) => {
   let rooms = await queryString;
   if (keyword) {
     rooms = rooms.filter((room) =>
-      room.participants.some((participant) =>
-        keyword.test(participant.full_name)
-      )
+      room.participants.some((participant) => {
+        if (participant._id.toJSON() !== userId.toJSON()) {
+          return keyword.test(participant.full_name);
+        }
+      })
     );
   }
   const sendRoom = rooms.map((room) => {
@@ -64,12 +75,8 @@ export const getRooms = CatchAsync(async (req, res, next) => {
       user: roomData.participants.at(0),
       isPen: roomData.isPen,
       isReeded: roomData.isReeded,
-      message: roomData.messages
-        .slice(0, 2)
-        .map(({ sender, room, receiver, messageId, ...rest }) => ({
-          ...rest,
-        }))
-        .at(0),
+      unread_count: roomData.unread_count,
+      message: roomData.message,
       updatedAt: roomData.updatedAt,
       roomId: roomData.roomId,
     };
@@ -83,7 +90,7 @@ export const deleteRoom = CatchAsync(async (req, res, next) => {
   const userId = req.user._id;
 
   const haveRoom = await Room.findOneAndDelete({
-    $or: [{ user_1: userId }, { user_2: userId }],
+    participants: { $in: [userId] },
     _id: id,
   });
   if (!haveRoom) {

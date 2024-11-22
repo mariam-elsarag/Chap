@@ -11,29 +11,24 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-const userSockeMap = {};
+const onlineUsers = {};
 export const getReciverSocketId = (reciverId) => {
-  return userSockeMap[reciverId];
+  return onlineUsers[reciverId];
 };
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   if (userId) {
-    userSockeMap[userId] = socket.id;
+    onlineUsers[userId] = socket.id;
   }
   //emit use to send event to all connected clients
-  io.emit("getOnlineUsers", Object.keys(userSockeMap));
+  io.emit("getOnlineUsers", Object.keys(onlineUsers));
+
   // to delete
   socket.on("disconnect", (socket) => {
-    delete userSockeMap[userId];
-    console.log(userSockeMap, "disconne roma");
-    io.emit("getOnlineUsers", Object.keys(userSockeMap));
+    delete onlineUsers[userId];
+
+    io.emit("getOnlineUsers", Object.keys(onlineUsers));
     console.log("user connect", socket);
   });
-});
-io.on("disconnect", (socket) => {
-  delete userSockeMap[userId];
-  console.log(userSockeMap, "disconne roma");
-  io.emit("getOnlineUsers", Object.keys(userSockeMap));
-  console.log("user connect", socket);
 });
 export { app, io, server };

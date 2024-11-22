@@ -14,6 +14,7 @@ import GlobalErrors from "../Middlewares/error-handeler.js";
 // routes
 import authRoutes from "../Routes/auth-route.js";
 import chatRoutes from "../Routes/chat-route.js";
+import userRoutes from "../Routes/user-route.js";
 // db
 import connectToDb from "../Db/connectToDb.js";
 // socket
@@ -33,6 +34,7 @@ app.use(mongoSanitize());
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/user", userRoutes);
 
 app.all("*", (req, res, next) => {
   next(new AppErrors(`Can't find ${req.originalUrl} on this server`, 404));

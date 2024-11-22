@@ -16,7 +16,7 @@ const FilterBody = (body, next, requiredFields, allowedFields = []) => {
   });
 
   if (errors.length > 0) {
-    next(new AppErrors(errors, 400)); // Add return here
+    next(new AppErrors(errors, 400));
     return null;
   }
 

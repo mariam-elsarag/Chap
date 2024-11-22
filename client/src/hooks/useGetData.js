@@ -5,7 +5,7 @@ import axiosInstance from "../service/axiosInstance";
 const apiKey = import.meta.env.VITE_REACT_APP_BASE_URL;
 
 function useGetData(endpoint) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [query, setQuery] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
@@ -21,11 +21,12 @@ function useGetData(endpoint) {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        params: { query },
+        params: { ...query },
         signal,
       });
       const fetchedData = await response.data;
       setData(fetchedData);
+      console.log("kkkk");
     } catch (error) {
       console.error("Error fetching data:", error);
 

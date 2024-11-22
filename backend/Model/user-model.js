@@ -60,6 +60,19 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
 });
+
+// set default for user avatar
+userSchema.pre("save", function (next) {
+  if (!this.isModified("gender")) return next();
+  if (this.gender === "male") {
+    this.avatar =
+      "https://res.cloudinary.com/dwlbskyfd/image/upload/v1731995681/mediafiles/Avatar/jzojgzosjr2ih1z75egk.svg";
+  } else {
+    this.avatar =
+      "https://res.cloudinary.com/dwlbskyfd/image/upload/v1731995670/mediafiles/Avatar/y7d3mcmnsftchrjih3jc.svg";
+  }
+  next();
+});
 // compare password for login
 userSchema.methods.comparePassword = async function (
   candidatePassword,

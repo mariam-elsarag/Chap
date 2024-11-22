@@ -3,7 +3,7 @@ import AppErrors from "../Utils/AppErrors.js";
 // handle development error
 const sendErrorForDev = (err, res) => {
   res.status(err.statusCode).json({
-    error: err,
+    error: err.message,
   });
 };
 // handle production error
@@ -49,7 +49,6 @@ const handleCastError = (err) => {
 
 const sendErrorForProduction = (err, res) => {
   if (err.isOperational) {
-    console.log("mari");
     res.status(err.statusCode).json({ errors: err.message });
   } else {
     res.status(err.statusCode).json({ error: "Something went wrong" });

@@ -63,7 +63,7 @@ export const getOne = (Model, excludeFields = [], populateOption) =>
   });
 
 // get all
-export const getAll = (Model, nameOfReturnData) =>
+export const getAll = (Model, nameOfReturnData = data) =>
   CatchAsync(async (req, res, next) => {
     const doc = await Model.find();
     res.status(200).json({ [nameOfReturnData]: doc });
