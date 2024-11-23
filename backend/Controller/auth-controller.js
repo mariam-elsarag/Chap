@@ -40,7 +40,6 @@ export const forgetPassword = CatchAsync(async (req, res, next) => {
   const requiredArray = ["email"];
   const filterBody = FilterBody(req.body, next, requiredArray);
 
-  // check if this user exist
   const user = await User.findOne({ email: filterBody.email });
   if (!user) {
     return next(new AppErrors("User not fuound!", 404));
@@ -71,7 +70,6 @@ export const verifyOtp = CatchAsync(async (req, res, next) => {
   const requiredArray = ["otp", "email"];
   const filterBody = FilterBody(req.body, next, requiredArray);
 
-  // check if this user exist
   const user = await User.findOne({ email: filterBody.email });
   if (!user) {
     return next(new AppErrors("User not fuound!", 404));
@@ -80,7 +78,7 @@ export const verifyOtp = CatchAsync(async (req, res, next) => {
   if (!user.otp) {
     return next(new AppErrors("Invalid OTP", 400));
   }
-  // check time
+
   if (user.otpExpire.getTime() < Date.now()) {
     return next(new AppErrors("OTP has expired", 400));
   }
@@ -89,10 +87,10 @@ export const verifyOtp = CatchAsync(async (req, res, next) => {
   }
   user.otp = undefined;
   user.otpExpire = undefined;
+  user.isVerified = true;
   await user.save({ validateBeforeSave: false });
   res.status(200).json({ message: "Valid OTP" });
 });
-// forget password
 
 export const resetPassword = CatchAsync(async (req, res, next) => {
   const requiredArray = ["password", "email"];
@@ -101,7 +99,9 @@ export const resetPassword = CatchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppErrors("User not found!", 404));
   }
-
+  if (!user.isVerified) {
+    return next(new AppErrors("Verify your OTP ", 401));
+  }
   user.password = filterBody.password;
   user.passwordChangedAt = Date.now();
   await user.save();

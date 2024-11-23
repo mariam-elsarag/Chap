@@ -10,6 +10,7 @@ export const MessageLayout = ({ type = "text", data, isSender = false }) => {
         return <MessageText isSender={isSender} text={data?.text} />;
     }
   };
+
   return (
     <div
       className={`flex items-start  ${
@@ -18,7 +19,7 @@ export const MessageLayout = ({ type = "text", data, isSender = false }) => {
     >
       {!isSender && (
         <img
-          src={AvatarUserBoy}
+          src={data?.sender?.avatar}
           alt="user"
           className="w-[43px] h-[43px] rounded-full object-cover object-center "
         />

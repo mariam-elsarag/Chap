@@ -66,7 +66,6 @@ const ChatEditor = () => {
   const { selectRoom, setMessageHistory } = useChat();
   const [message, setMessage] = useState("");
   const sendMessage = async () => {
-    console.log("roma", message);
     if (message !== "") {
       try {
         const sendData = { room: selectRoom.id, text: message };
@@ -76,7 +75,7 @@ const ChatEditor = () => {
         );
         if (response.status === 200) {
           setMessage("");
-          setMessageHistory((prevMessages) => [...prevMessages, response.data]);
+          // setMessageHistory((prevMessages) => [...prevMessages, response.data]);
         }
       } catch (err) {
         console.log("error");
@@ -86,9 +85,9 @@ const ChatEditor = () => {
   return (
     <footer className="px-8">
       <div className="flex items-center gap-2">
-        <span className="w-[24px] h-[24px] center">
+        {/* <span className="w-[24px] h-[24px] center">
           <GrAttachment color="var(--text-1)" size={20} />
-        </span>
+        </span> */}
         <div className="flex items-start border border-border flex-1 py-2 rounded-10 px-4">
           <textarea
             placeholder="Type a message"
@@ -104,7 +103,7 @@ const ChatEditor = () => {
               }
             }}
           />
-          <span className=" w-[30px] h-[30px] center">
+          <span className=" w-[30px] h-[30px] center" onClick={sendMessage}>
             <RiSendPlaneFill color="var(--primary)" size={25} />
           </span>
         </div>

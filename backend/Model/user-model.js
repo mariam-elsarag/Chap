@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
     required: [true, "Gender is required"],
     enum: ["male", "female"],
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   passwordChangedAt: Date,
   otp: String,
   otpExpire: Date,

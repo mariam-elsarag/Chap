@@ -52,7 +52,7 @@ export const getRooms = CatchAsync(async (req, res, next) => {
       { path: "participants", select: "full_name avatar" },
       { path: "message", select: "text" },
     ])
-    .sort({ isPen: -1, updatedAt: -1 })
+    .sort({ isPin: -1, updatedAt: -1 })
     .select("-createdAt");
 
   let rooms = await queryString;

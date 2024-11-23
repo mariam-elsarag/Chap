@@ -6,36 +6,22 @@ import { formatTime, truncateText } from "../../utils/helper";
 import useGetData from "./../../hooks/useGetData";
 import { useChat } from "../../context/Chat/ChatContext";
 import { useAuth } from "../../context/Auth/AuthContext";
+import Model from "../../components/Modal/Modal";
+import Users from "./Users/Users";
 
 const ChatRooms = () => {
-  const { socket } = useAuth();
+  const { rooms, setQuery, setRefetchData } = useChat();
   const [search, setSearch] = useState("");
-  const { data, setQuery, setData } = useGetData(`/api/chat/room`);
 
-  useEffect(() => {
-    if (socket) {
-      const handleRoomUpdate = (updateRoom) => {
-        setData((prevData) => {
-          const updatedRooms = prevData.rooms.map((item) =>
-            item.roomId === updateRoom.roomId
-              ? { ...item, message: { text: updateRoom.message } }
-              : item
-          );
+  // for users
+  const [visible, setVisible] = useState(false);
 
-          return { ...prevData, rooms: updatedRooms };
-        });
-      };
-
-      socket.on("roomUpdate", handleRoomUpdate);
-
-      return () => {
-        socket.off("roomUpdate", handleRoomUpdate);
-      };
-    }
-  }, [socket]);
-  console.log(data, "romw");
+  const closeModel = async () => {
+    setVisible(false);
+    setRefetchData(Date.now());
+  };
   return (
-    <aside className="w-[320px] pt-5 pb-3 px-4  border-r border-border overflow-hidden h-full flex flex-col  gap-4 ">
+    <aside className="w-[370px] pt-5 pb-3 px-4  border-r border-border overflow-hidden h-full flex flex-col  gap-4 ">
       <header className="flex items-center  gap-2">
         <div className=" center_y gap-2 flex-1 input !h-[40px]">
           <TfiSearch color="var(--text-1)" />
@@ -51,15 +37,26 @@ const ChatRooms = () => {
             placeholder="Search"
           />
         </div>
-        <span className="w-[30px] h-[30px] bg-primary rounded-full center">
+        <span
+          onClick={() => setVisible(true)}
+          className="w-[30px] h-[30px] bg-primary rounded-full center"
+        >
           <FaPlus color="var(--text-2)" />
         </span>
       </header>
       <div className="overflow-y-auto h-full flex flex-col gap-3">
-        {data?.rooms?.map((room) => (
+        {rooms?.rooms?.map((room) => (
           <ChatMember data={room} key={room?.roomId} />
         ))}
       </div>
+      {/* modal */}
+      <Model
+        open={visible}
+        onClose={() => setVisible(false)}
+        headerTitle="Create a new room"
+      >
+        <Users onClose={closeModel} />
+      </Model>
     </aside>
   );
 };
@@ -74,13 +71,14 @@ const ChatMember = ({ data }) => {
     }
   };
 
-  console.log(data, "data?.isReaded ");
   return (
     <figure
       role="button"
       onClick={() => openRoom(data?.roomId, data.user)}
       className={`flex items-center justify-between ${
-        data?.isReeded ? "bg-red" : "bg-light-primary"
+        !data?.isReeded && data?.unread_count > 0
+          ? "bg-light-primary"
+          : "bg-transparent"
       } py-3 px-2 rounded-6  gap-2`}
     >
       <div className="relative w-[58px] h-[58px] rounded-full">

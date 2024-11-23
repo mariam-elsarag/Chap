@@ -9,6 +9,7 @@ function useGetData(endpoint) {
   const [query, setQuery] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
+  const [refetchData, setRefetchData] = useState();
   const { token } = useAuth();
 
   const fetchData = async () => {
@@ -26,7 +27,6 @@ function useGetData(endpoint) {
       });
       const fetchedData = await response.data;
       setData(fetchedData);
-      console.log("kkkk");
     } catch (error) {
       console.error("Error fetching data:", error);
 
@@ -37,9 +37,9 @@ function useGetData(endpoint) {
   };
   useEffect(() => {
     fetchData();
-  }, [endpoint, query]);
+  }, [refetchData, query]);
 
-  return { data, setData, loading, fetchData, error, setQuery };
+  return { data, setData, loading, fetchData, setRefetchData, error, setQuery };
 }
 
 export default useGetData;

@@ -2,19 +2,28 @@ import React, { useState } from "react";
 import Form from "../../components/form/Form";
 import Button from "../../components/Button";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../../service/axiosInstance";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   // ___________________ use form ____________________
   const {
     control,
     setError,
     reset,
+    getValues,
     formState: { errors, dirtyFields, isDirty },
     handleSubmit,
   } = useForm({
-    defaultValues: { email: "", password: "" },
+    defaultValues: {
+      full_name: "",
+      email: "",
+      password: "",
+      confirm_password: "",
+      gender: "",
+    },
     mode: "onChange",
   });
   // ___________________ list ____________________
@@ -48,7 +57,7 @@ const Register = () => {
     {
       id: 3,
       formType: "password",
-      fieldName: "new_password",
+      fieldName: "password",
       validator: {
         required: "Password is required",
       },
@@ -63,7 +72,7 @@ const Register = () => {
       validator: {
         required: "Confirm password is required",
         validate: (value) => {
-          const password = getValues("new_password");
+          const password = getValues("password");
           return value === password || "Passwords do not match";
         },
       },
@@ -71,36 +80,50 @@ const Register = () => {
       label: "Confirm password",
       showForgetPassword: false,
     },
+    {
+      id: 5,
+      name: "gender",
+      formType: "radio",
+      fieldName: "gender",
+      validator: {
+        required: "gender is required",
+      },
+      label: "Male",
+      value: "male",
+      isGrouped: true,
+    },
+    {
+      id: 6,
+      name: "gender",
+      formType: "radio",
+      fieldName: "gender",
+      validator: {
+        required: "gender is required",
+      },
+      label: "Female",
+      value: "female",
+      groupWith: 5,
+    },
   ];
   // ___________________ submit ____________________
   const onsubmit = async (data) => {
-    // try {
-    //   setLoading(true);
-    //   const response = await axiosInstance.post("/login/", data);
-    //   if (response?.status === 200) {
-    //     login(response.data);
-    //     navigate("/home", { replace: true });
-    //     toast.success(t("successfullyLogin"));
-    //   }
-    // } catch (err) {
-    //   if (err?.response?.data?.non_field_errors) {
-    //     setError("email", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     setError("password", {
-    //       type: "manual",
-    //       message: t("invalidCredentials"),
-    //     });
-    //     toast.error(t("invalidCredentials"));
-    //   }
-    //   if (err?.response?.data === "not verfied") {
-    //     toast.error(t("notVerified"));
-    //   }
-    //   console.log("error", err);
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      setLoading(true);
+      const response = await axiosInstance.post("/api/auth/register", data);
+      if (response?.status === 201) {
+        navigate("/login");
+      }
+    } catch (err) {
+      if (err?.response?.data?.errors?.email) {
+        setError("email", {
+          type: "manual",
+          message: "Email already exists",
+        });
+      }
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <form onSubmit={handleSubmit(onsubmit)} className="grid gap-10">

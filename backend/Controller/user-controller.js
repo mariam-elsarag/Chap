@@ -1,4 +1,5 @@
 import User from "../Model/user-model.js";
+import Room from "../Model/room-model.js";
 
 // utils
 import ApiFeature from "../Utils/ApiFeature.js";
@@ -9,7 +10,35 @@ import uploadImage from "../Utils/UploadImage.js";
 
 // get all users
 export const getAllUsers = CatchAsync(async (req, res, next) => {
-  const feature = new ApiFeature(User.find(), req.query).pagination(10);
+  const userId = req.user._id;
+  const usersWithoutRoom = await User.aggregate([
+    { $match: { _id: { $ne: userId } } },
+    {
+      $lookup: {
+        from: "Room",
+        let: { userId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $in: [userId, "$participants"] },
+                  { $in: ["$$userId", "$participants"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "existingRoom",
+      },
+    },
+    { $match: { existingRoom: { $size: 0 } } },
+  ]);
+
+  const feature = new ApiFeature(
+    User.find({ _id: { $in: usersWithoutRoom.map((user) => user._id) } }),
+    req.query
+  ).pagination(5);
   const users = await feature.getPaginations(User, req);
   res.status(200).json({ ...users });
 });

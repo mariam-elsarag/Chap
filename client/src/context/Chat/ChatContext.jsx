@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { apiKey } from "../../utils/helper";
 import { useAuth } from "../Auth/AuthContext";
 import axiosInstance from "../../service/axiosInstance";
+import useGetData from "../../hooks/useGetData";
 
 const ChatContext = createContext(null);
 
@@ -11,6 +12,14 @@ const ChatProvider = ({ children }) => {
   const [selectRoom, setSelectRoom] = useState(null);
   const [messageHistory, setMessageHistory] = useState([]);
   const { socket } = useAuth();
+
+  // for rooms
+  const {
+    data: rooms,
+    setQuery,
+    setData: setRooms,
+    setRefetchData,
+  } = useGetData(`/api/chat/room`);
 
   // all messages
   const [loading, setLoading] = useState(false);
@@ -54,15 +63,46 @@ const ChatProvider = ({ children }) => {
     setSelectRoom({ id, user });
     await getAllMessages(id, 1);
     await readMessage(id);
+    socket.emit("openRoom", id);
   };
   useEffect(() => {
-    if (selectRoom) {
+    if ((selectRoom, socket)) {
       socket.on("message", (newMessage) => {
+        console.log(newMessage, "roma start");
         setMessageHistory((pre) => [...pre, newMessage]);
       });
     }
-  }, [selectRoom]);
+    return () => socket.off("message");
+  }, [selectRoom, socket]);
 
+  useEffect(() => {
+    if (socket) {
+      const handleRoomUpdate = (updateRoom) => {
+        setRooms((prevData) => {
+          const updatedRooms = prevData.rooms.map((item) =>
+            item.roomId === updateRoom.roomId
+              ? {
+                  ...item,
+                  message: {
+                    text: updateRoom.message,
+                    isReaded: updateRoom.isReaded,
+                    unread_count: updateRoom.unread_count,
+                  },
+                }
+              : item
+          );
+
+          return { ...prevData, rooms: updatedRooms };
+        });
+      };
+
+      socket.on("roomUpdate", handleRoomUpdate);
+
+      return () => {
+        socket.off("roomUpdate", handleRoomUpdate);
+      };
+    }
+  }, [socket]);
   return (
     <ChatContext.Provider
       value={{
@@ -71,6 +111,9 @@ const ChatProvider = ({ children }) => {
         setMessageHistory,
         openRoom,
         loading,
+        rooms,
+        setRefetchData,
+        setQuery,
       }}
     >
       {children}
