@@ -32,7 +32,10 @@ const ChatProvider = ({ children }) => {
       const endpoint = page ? `/api/chat/message/${roomId}` : next;
       const response = await axiosInstance.get(endpoint);
       if (response.status === 200) {
-        setMessageHistory(response.data.results);
+        const data = response.data.results.reverse();
+        setMessageHistory((prevChat) => {
+          return [...data, ...prevChat];
+        });
         setNext(response.data.next);
       }
     } catch (err) {
@@ -61,6 +64,7 @@ const ChatProvider = ({ children }) => {
 
   const openRoom = async (id, user) => {
     setSelectRoom({ id, user });
+    setMessageHistory([]);
     await getAllMessages(id, 1);
     await readMessage(id);
     socket.emit("openRoom", id);
@@ -68,7 +72,6 @@ const ChatProvider = ({ children }) => {
   useEffect(() => {
     if ((selectRoom, socket)) {
       socket.on("message", (newMessage) => {
-        console.log(newMessage, "roma start");
         setMessageHistory((pre) => [...pre, newMessage]);
       });
     }
@@ -114,6 +117,8 @@ const ChatProvider = ({ children }) => {
         rooms,
         setRefetchData,
         setQuery,
+        getAllMessages,
+        next,
       }}
     >
       {children}

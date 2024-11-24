@@ -62,7 +62,7 @@ export const sendMessage = CatchAsync(async (req, res, next) => {
 export const getAllMessages = CatchAsync(async (req, res, next) => {
   const { id } = req.params;
   const feature = new ApiFeature(
-    Message.find({ room: id }),
+    Message.find({ room: id }).sort({ createdAt: -1 }),
     req.query
   ).pagination(20);
   const messages = await feature.getPaginations(Message, req);

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AvatarUserBoy } from "../../assets/images/Image";
 import { RiSendPlaneFill } from "react-icons/ri";
 import { GrAttachment } from "react-icons/gr";
-import { MessageLayout } from "./MessageType";
+import { Divider, MessageLayout } from "./MessageType";
 import { useChat } from "../../context/Chat/ChatContext";
 import { useAuth } from "../../context/Auth/AuthContext";
 import axiosInstance from "./../../service/axiosInstance";
+import Spinner from "../../Ui/Spinner";
 const ChatContent = () => {
   return (
     <div className="flex-1 bg--bg grid grid-rows-[auto_1fr_auto]  h-full pb-5 ">
@@ -29,7 +30,7 @@ const ChatHeader = () => {
               : AvatarUserBoy
           }
           alt="avatar"
-          className="w-[48px] h-[48px] rounded-full object-cover"
+          className=" w-[40px] h-[40px] lg:w-[48px] lg:h-[48px] rounded-full object-cover"
         />
 
         <div className="flex  flex-col gap-1">
@@ -48,16 +49,68 @@ const ChatHeader = () => {
   );
 };
 const ChatBody = () => {
-  const { messageHistory } = useChat();
+  const [displayedDates, setDisplayedDates] = useState([]);
+  const [isScroll, setIsScroll] = useState(false);
+  const chatRef = useRef(null);
+
+  const {
+    messageHistory,
+    loading: loadingMessage,
+    next,
+    getAllMessages,
+  } = useChat();
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (messageHistory?.length > 0 && chatRef?.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messageHistory]);
+
+  useEffect(() => {
+    if (messageHistory?.length > 0) {
+      const dates = messageHistory?.map((item) =>
+        item.createdAt.substring(0, 10)
+      );
+      const uniqueDates = [...new Set(dates)];
+      setDisplayedDates(uniqueDates);
+    }
+  }, [messageHistory]);
+
+  const handleScroll = (e) => {
+    if (e.target.scrollTop === 0 && next && !loadingMessage) {
+      setIsScroll(true);
+      getAllMessages();
+    }
+  };
+
   return (
-    <div className="px-8 bg-bg py-5 flex flex-col gap-3 overflow-y-auto   ">
-      {messageHistory?.map((item) => (
-        <MessageLayout
-          data={item}
-          isSender={user?.userId === item?.sender?.userId}
-        />
-      ))}
+    <div
+      onScroll={handleScroll}
+      ref={chatRef}
+      className="px-8 bg-bg py-5 flex flex-col gap-3 overflow-y-auto"
+    >
+      {loadingMessage ? (
+        <div className="flex items-center justify-center flex-1">
+          <Spinner />
+        </div>
+      ) : (
+        messageHistory?.length > 0 &&
+        displayedDates?.map((date, index) => (
+          <React.Fragment key={index}>
+            <Divider date={date} />
+            {messageHistory
+              ?.filter((item) => item.createdAt.substring(0, 10) === date)
+              ?.map((item, msgIndex) => (
+                <MessageLayout
+                  key={msgIndex}
+                  data={item}
+                  isSender={user.userId === item.sender.userId}
+                />
+              ))}
+          </React.Fragment>
+        ))
+      )}
     </div>
   );
 };

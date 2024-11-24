@@ -10,7 +10,7 @@ import { useAuth } from "../context/Auth/AuthContext";
 
 const Navbar = () => {
   const { theme, handleThemeSwitch } = useDarkMode();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   return (
     <nav className="bg-bg text-text-1 py-4 px-4 border-b border-border center_y justify-between w-full ">
       <Link to="/" className="center_y gap-1">
@@ -18,6 +18,12 @@ const Navbar = () => {
         <span className="text-primary">Chat</span>
       </Link>
       <div className="center_y gap-3">
+        <figure>
+          <img
+            src={user?.avatar}
+            className="w-[25px] border-2 border-border h-[25px] rounded-full object-cover object-center"
+          />
+        </figure>
         {theme === "light" ? (
           <span role="button" onClick={handleThemeSwitch}>
             <PiMoonThin size={20} color="var(--text-1)" />

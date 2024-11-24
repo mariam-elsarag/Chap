@@ -4,7 +4,8 @@ import Button from "../../components/Button";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../service/axiosInstance";
-
+const passwordPattern =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/;
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,10 @@ const Register = () => {
       fieldName: "password",
       validator: {
         required: "Password is required",
+        pattern: {
+          value: passwordPattern,
+          message: "Please enter a strong password",
+        },
       },
       placeholder: "password",
       label: "password",

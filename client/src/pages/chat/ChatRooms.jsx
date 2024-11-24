@@ -21,7 +21,7 @@ const ChatRooms = () => {
     setRefetchData(Date.now());
   };
   return (
-    <aside className="w-[370px] pt-5 pb-3 px-4  border-r border-border overflow-hidden h-full flex flex-col  gap-4 ">
+    <aside className="w-[280px] xl:w-[345px] pt-5 pb-3 px-4  border-r border-border overflow-hidden h-full flex flex-col  gap-4 ">
       <header className="flex items-center  gap-2">
         <div className=" center_y gap-2 flex-1 input !h-[40px]">
           <TfiSearch color="var(--text-1)" />
@@ -81,11 +81,11 @@ const ChatMember = ({ data }) => {
           : "bg-transparent"
       } py-3 px-2 rounded-6  gap-2`}
     >
-      <div className="relative w-[58px] h-[58px] rounded-full">
+      <div className="relative w-[45px] h-[45px]  lg:w-[58px] lg:h-[58px] rounded-full">
         <img
           src={data?.user?.avatar !== "" ? data?.user?.avatar : AvatarUserBoy}
           alt="avatar"
-          className="w-[58px] h-[58px] rounded-full object-cover"
+          className="w-[45px] h-[45px]  lg:w-[58px] lg:h-[58px] rounded-full object-cover"
         />
       </div>
       <div className="flex  flex-col gap-1 flex-1">

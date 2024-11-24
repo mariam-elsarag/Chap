@@ -30,4 +30,4 @@ A real-time chat application built using Node.js and MongoDB, featuring user aut
 
 ## Postman Documentation
 
-For detailed API documentation and usage examples, please refer to the [Postman Documentation](https://documenter.getpostman.com/view/32181635/2sAY52beDd).
+For detailed API documentation and usage examples, please refer to the [Postman Documentation](https://documenter.getpostman.com/view/39898064/2sAYBUDYDM).

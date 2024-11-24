@@ -47,10 +47,13 @@ const Otp = () => {
         navigate(`/reset-password?email=${email}`, { replace: true });
       }
     } catch (err) {
-      if (err?.response?.data?.errors) {
+      if (err?.response?.data?.errors === "Invalid OTP") {
         toast.error("Invalid OTP");
+        setError("otp", {
+          type: "manual",
+          message: "Invalid OTP",
+        });
       }
-      console.log("error", err);
     } finally {
       setLoading(false);
     }

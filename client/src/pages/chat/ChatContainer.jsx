@@ -12,7 +12,7 @@ const ChatContainer = () => {
       {selectRoom ? (
         <ChatContent />
       ) : (
-        <div className="center w-full h-full">
+        <div className="center flex-1 h-full">
           <div className="flex flex-col items-center justify-center gap-5">
             <BsChat size={60} color="var(--text-1)" />
             <p className="text-2xl text-text-1 ">No room selected</p>
